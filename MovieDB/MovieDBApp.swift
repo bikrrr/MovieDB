@@ -12,9 +12,8 @@ import SwiftUI
 struct MovieDBApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(sort: SortDescriptor(\Movie.name))
         }
         .modelContainer(for: Movie.self)
     }
 }
-

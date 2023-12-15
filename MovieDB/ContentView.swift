@@ -13,12 +13,32 @@ struct ContentView: View {
 
     @State private var navPath = [Movie]()
     @State private var sortOrder = SortDescriptor(\Movie.name)
-    @State private var searchText = ""
+    @State private var searchText: String = ""
+
+    @Query(sort: [SortDescriptor(\Movie.name, order: .forward), SortDescriptor(\Movie.director)]) var movies: [Movie]
+
+    init(sort: SortDescriptor<Movie>, searchString: String = "") {
+        _movies = Query(
+            filter: #Predicate {
+                searchString.isEmpty || $0.name.contains(searchString)
+            },
+            sort: [sort]
+        )
+    }
 
     var body: some View {
         NavigationStack(path: $navPath) {
             List {
-                MovieListView(sort: sortOrder, searchString: searchText)
+                ForEach(movies) { movie in
+                    NavigationLink(value: movie){
+                        VStack(alignment: .leading) {
+                            Text(movie.name)
+                                .font(.headline)
+                            Text("Directed by: \(movie.director)")
+                        }
+                    }
+                }
+                .onDelete(perform: deleteMovies)
             }
             .navigationDestination(for: Movie.self) { movie in
                 MovieDetailsView(movie: movie)
@@ -40,48 +60,22 @@ struct ContentView: View {
     }
 
     private func addSamples() {
-        let redOctober = Movie(name: "The Hunt for Red October", director: "John McTiernan", releaseYear: 1990)
-        let sneakers = Movie(name: "Sneakers", director: "Phil Alden Robinson", releaseYear: 1992)
-        let endLiss = Movie(name: "Endliss Possibilities: The Casey Liss Story", director: "Erin Liss", releaseYear: 2006)
+        for movie in SampleData.movies {
+            modelContext.insert(movie)
+        }
 
-        modelContext.insert(redOctober)
-        modelContext.insert(sneakers)
-        modelContext.insert(endLiss)
         try? modelContext.save()
     }
 
-    func clear() {
-        try? modelContext.delete(model: Movie.self)
-        try? modelContext.save()
+    func deleteMovies(_ indexSet: IndexSet) {
+        for index in indexSet {
+            let movie = movies[index]
+            modelContext.delete(movie)
+        }
     }
-}
-
-struct ContentView_Previews: PreviewProvider {
-   static var sampleModelContext: ModelContext? {
-       // Create a Schema (replace this with actual Schema creation)
-       let sampleSchema = Schema() // Replace with actual Schema creation
-
-       do {
-           let sampleModelContainer = try ModelContainer(for: sampleSchema)
-           return ModelContext(sampleModelContainer)
-       } catch {
-           // Log error or handle it as needed
-           print("Error initializing ModelContainer: \(error)")
-           return nil
-       }
-   }
-
-   static var previews: some View {
-       if sampleModelContext != nil {
-           ContentView()
-       } else {
-           // Provide an alternative view in case of initialization failure
-           Text("Error initializing ModelContext")
-       }
-   }
 }
 
 #Preview {
-    return ContentView()
+    return ContentView(sort: SortDescriptor(\.name))
         .modelContainer(previewContainer)
 }

@@ -22,8 +22,6 @@ struct MovieDetailsView: View {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: Movie.self, configurations: config)
 
-    let movie = Movie(name: "Donnie Darko", director: "Richard Kelly", releaseYear: 2001)
-
-    return MovieDetailsView(movie: movie)
+    return MovieDetailsView(movie: SampleData.movies[0])
         .modelContainer(container)
 }
