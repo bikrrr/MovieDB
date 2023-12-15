@@ -56,31 +56,6 @@ struct ContentView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-   static var sampleModelContext: ModelContext? {
-       // Create a Schema (replace this with actual Schema creation)
-       let sampleSchema = Schema() // Replace with actual Schema creation
-
-       do {
-           let sampleModelContainer = try ModelContainer(for: sampleSchema)
-           return ModelContext(sampleModelContainer)
-       } catch {
-           // Log error or handle it as needed
-           print("Error initializing ModelContainer: \(error)")
-           return nil
-       }
-   }
-
-   static var previews: some View {
-       if sampleModelContext != nil {
-           ContentView()
-       } else {
-           // Provide an alternative view in case of initialization failure
-           Text("Error initializing ModelContext")
-       }
-   }
-}
-
 #Preview {
     return ContentView()
         .modelContainer(previewContainer)

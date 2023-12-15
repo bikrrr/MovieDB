@@ -17,4 +17,3 @@ struct MovieDBApp: App {
         .modelContainer(for: Movie.self)
     }
 }
-
