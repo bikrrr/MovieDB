@@ -17,6 +17,10 @@ struct ContentView: View {
 
     @Query(sort: [SortDescriptor(\Movie.name, order: .forward), SortDescriptor(\Movie.director)]) var movies: [Movie]
 
+    private var filteredMovies: [Movie] {
+        movies.filter { searchText.isEmpty || $0.name.contains(searchText) }
+    }
+
     init(sort: SortDescriptor<Movie>, searchString: String = "") {
         _movies = Query(
             filter: #Predicate {
@@ -29,7 +33,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $navPath) {
             List {
-                ForEach(movies) { movie in
+                ForEach(filteredMovies) { movie in
                     NavigationLink(value: movie){
                         VStack(alignment: .leading) {
                             Text(movie.name)
