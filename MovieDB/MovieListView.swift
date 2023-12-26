@@ -10,7 +10,7 @@ import SwiftUI
 
 struct MovieListView: View {
     @Environment(\.modelContext) var modelContext
-    @Query(sort: [SortDescriptor(\Movie.name, order: .forward), SortDescriptor(\.director)]) var movies: [Movie]
+    @Query(sort: [SortDescriptor(\Movie.name, order: .forward), SortDescriptor(\Movie.director)]) var movies: [Movie]
 
     init(sort: SortDescriptor<Movie>, searchString: String = "") {
         _movies = Query(
