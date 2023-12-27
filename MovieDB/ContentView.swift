@@ -11,15 +11,14 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
 
-    @State private var navPath = [Movie]()
-    @State private var sortOrder = SortDescriptor(\Movie.name)
+    @State private var navPath = NavigationPath()
     @State private var searchText = ""
 
     var body: some View {
         NavigationStack(path: $navPath) {
-            List {
-                MovieListView(sort: sortOrder, searchString: searchText)
-            }
+
+            MovieListView(searchString: searchText)
+
             .navigationDestination(for: Movie.self) { movie in
                 MovieDetailsView(movie: movie)
             }
@@ -33,10 +32,10 @@ struct ContentView: View {
     }
 
     func addNewRestaurant() {
-        let newMovie = Movie(name: "New Restaurant", director: "Someone", releaseYear: 1950)
+        let newMovie = Movie(name: "New Movie", director: "Someone", releaseYear: 1950)
         modelContext.insert(newMovie)
 
-        navPath = [newMovie]
+        navPath.append(newMovie)
     }
 
     private func addSamples() {

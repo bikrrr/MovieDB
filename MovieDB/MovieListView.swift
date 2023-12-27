@@ -10,38 +10,41 @@ import SwiftUI
 
 struct MovieListView: View {
     @Environment(\.modelContext) var modelContext
-    @Query(sort: [SortDescriptor(\Movie.name, order: .forward), SortDescriptor(\Movie.director)]) var movies: [Movie]
+    @Query var movies: [Movie]
 
-    init(sort: SortDescriptor<Movie>, searchString: String = "") {
-        _movies = Query(
-            filter: #Predicate {
-                searchString.isEmpty || $0.name.contains(searchString)
-            },
-            sort: [sort]
-        )
+    init(searchString: String = "", sortOrder: [SortDescriptor<Movie>] = []) {
+        _movies = Query(filter: #Predicate { movie in
+            if searchString.isEmpty {
+                true
+            } else {
+                movie.name.localizedStandardContains(searchString)
+            }
+        }, sort: [SortDescriptor(\Movie.name)])
     }
 
     var body: some View {
-        ForEach(movies) { movie in
-            NavigationLink(value: movie){
-                VStack(alignment: .leading) {
-                    Text(movie.name)
-                        .font(.headline)
-                    Text("Directed by: \(movie.director)")
+        List {
+            ForEach(movies) { movie in
+                NavigationLink(value: movie){
+                    VStack(alignment: .leading) {
+                        Text(movie.name)
+                            .font(.headline)
+                        Text("Directed by: \(movie.director)")
+                    }
                 }
             }
+            .onDelete(perform: deleteMovies)
         }
-        .onDelete(perform: deleteMovies)
     }
 
-    func deleteMovies(_ indexSet: IndexSet) {
-        for index in indexSet {
-            let movie = movies[index]
+    func deleteMovies(_ offsets: IndexSet) {
+        for offset in offsets {
+            let movie = movies[offset]
             modelContext.delete(movie)
         }
     }
 }
 
 #Preview {
-    MovieListView(sort: SortDescriptor(\.name))
+    MovieListView()
 }
