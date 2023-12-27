@@ -12,22 +12,12 @@ struct ContentView: View {
     @Environment(\.modelContext) var modelContext
 
     @State private var navPath = [Movie]()
-    @State private var sortOrder = SortDescriptor(\Movie.name)
     @State private var searchText: String = ""
 
     @Query(sort: [SortDescriptor(\Movie.name, order: .forward), SortDescriptor(\Movie.director)]) var movies: [Movie]
 
     private var filteredMovies: [Movie] {
         movies.filter { searchText.isEmpty || $0.name.contains(searchText) }
-    }
-
-    init(sort: SortDescriptor<Movie>, searchString: String = "") {
-        _movies = Query(
-            filter: #Predicate {
-                searchString.isEmpty || $0.name.contains(searchString)
-            },
-            sort: [sort]
-        )
     }
 
     var body: some View {
@@ -80,6 +70,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    return ContentView(sort: SortDescriptor(\.name))
+    return ContentView()
         .modelContainer(previewContainer)
 }
