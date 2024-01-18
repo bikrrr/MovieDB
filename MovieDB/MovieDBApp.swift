@@ -10,10 +10,20 @@ import SwiftUI
 
 @main
 struct MovieDBApp: App {
+    let container: ModelContainer
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(modelContext: container.mainContext)
         }
-        .modelContainer(for: Movie.self)
+        .modelContainer(container)
+    }
+
+    init() {
+        do {
+            container = try ModelContainer(for: Movie.self)
+        } catch {
+            fatalError("Failed to create ModelContainer for Movie.")
+        }
     }
 }
