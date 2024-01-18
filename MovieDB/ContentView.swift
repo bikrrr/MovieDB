@@ -72,8 +72,6 @@ extension ContentView {
                 print("Fetch failed")
             }
         }
-
-
     }
 }
 
