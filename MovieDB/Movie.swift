@@ -8,7 +8,8 @@
 import Foundation
 import SwiftData
 
-@Model final class Movie {
+@Model
+final class Movie {
   var name: String
   var director: String
   var releaseYear: Int
